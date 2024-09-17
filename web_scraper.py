@@ -10,6 +10,7 @@ from pymongo.mongo_client import MongoClient
 import certifi
 from datetime import datetime
 import os
+from mdb_config import mdblogin_user, mdblogin_pass #contains login info for Mongo DB implementation
 
 from openpyxl import Workbook #allows connecting to databases
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -228,11 +229,12 @@ maxBlockBreedPossiblePct = 0.25
 #############################################################################
 ## SETUP CONNECTION TO MONGODB
 connString = (
-    "mongodb+srv://ncba_admin:hydroprognecaspia@" + 
-    "cluster0.rzpx8.mongodb.net/ebd_mgmt?retryWrites=true&w=majority"
+    "mongodb+srv://% s:% s@cluster0.rzpx8.mongodb.net/ebd_mgmt?retryWrites=true&w=majority" % (
+        mdblogin_user,
+        mdblogin_pass
+    )
     )
 
-# connstring = "mongodb+srv://ncba_admin:hydroprognecaspia@cluster0.rzpx8.mongodb.net/ebd_mgmt?retryWrites=true&w=majority"
 client = MongoClient(connString, tlsCAFile=certifi.where())
 
 db = client.ebd_mgmt
