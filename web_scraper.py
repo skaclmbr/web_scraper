@@ -175,15 +175,6 @@ red_fill = PatternFill(bgColor="FF7979")
 green_fill = PatternFill(bgColor="92D050")
 pct_style = "0.0%"
 
-# dxRed = DifferentialStyle(font=Font(bold=True), fill=red_fill)
-# dxGreen = DifferentialStyle(fill=green_fill)
-
-# rulConRed = 
-
-# def addCondFormat(ws, range, formula):
-#     pass
-
-
 def createTable(dname, maxCol, currRow, style = style):
     tbl = Table(
         displayName = dname,
@@ -602,7 +593,12 @@ def main():
                     #add stats cols
                     for x,y in colsStats.items():
                         if x in colsSpp.keys():
-                            wsSpp[colsSpp[x] + str(rowSP)] = pd[x]
+                            if x == "ID_EBD_BLOCK":
+                                wsSpp[colsSpp[x] + str(rowSP)] = ('=HYPERLINK("https://ebird.org/atlasnc/block/' +
+                                pd["ID_BLOCK_CODE"] + '", "' + pd[x] + '")')
+                            
+                            else:
+                                wsSpp[colsSpp[x] + str(rowSP)] = pd[x]
 
                     rowSP += 1
             elif k == "top_atlasers":
@@ -621,7 +617,13 @@ def main():
                     rowTA += 1
             else: #all other fields
                 try:
-                    wsStats[colsStats[k] + str(rowST)] = v
+                    if k == "ID_EBD_NAME":
+                        wsStats[colsStats[k] + str(rowST)] = (
+                            '=HYPERLINK("https://ebird.org/atlasnc/block/' + 
+                            pd["ID_BLOCK_CODE"] + '", "' + v + '")'
+                        )
+                    else:
+                        wsStats[colsStats[k] + str(rowST)] = v
                 except: pass
 
                 if k in pctFields:
@@ -640,16 +642,17 @@ def main():
         
         # update mongodb ebird data
 
-        # blocksum.update_one(
-        #     {
-        #         "ID_BLOCK_CODE" : b
-        #     },
-        #     {
-        #         "$set": {
-        #             "ebird_web_data": pd
-        #         }
-        #     }
-        # )
+        blocksum.update_one(
+            {
+                "ID_BLOCK_CODE" : b
+            },
+            {
+                "$set": {
+                    "STATUS" : pd["status"],
+                    "ebird_web_data": pd
+                }
+            }
+        )
 
         bcount += 1
         print("atlas cache updated...")
