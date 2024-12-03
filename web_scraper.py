@@ -655,6 +655,17 @@ def main():
                 }
             }
         )
+        # also update block data
+        blocks.update_one(
+            {
+                "ID_BLOCK_CODE" : b
+            },
+            {
+                "$set" : {
+                    "STATUS" : pd["status"]
+                }
+            }
+        )
 
         bcount += 1
         print("atlas cache updated...")
